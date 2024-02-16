@@ -5,13 +5,14 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/soulinmaikadua/go-with-mongodb/pkg/configs"
 )
 
 func main() {
 	fmt.Println("Hello, world!")
 
 	// Connect to the database
-	if err := Connect(); err != nil {
+	if err := configs.Connect(); err != nil {
 		log.Fatal(err)
 	}
 
