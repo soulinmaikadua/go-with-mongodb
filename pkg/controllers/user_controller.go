@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 
@@ -9,10 +12,17 @@ import (
 )
 
 func GetUsers(c *fiber.Ctx) error {
+	// Connect to the database
+	if err := configs.Connect(); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("test users")
+	db := configs.Mg.Db
 	// get all records as a cursor
 	query := bson.D{{}}
-	cursor, err := configs.Mg.Db.Collection("traders").Find(c.Context(), query)
+	cursor, err := db.Collection("traders").Find(c.Context(), query)
 	if err != nil {
+		fmt.Println("can't find users")
 		return c.Status(500).SendString(err.Error())
 	}
 
@@ -20,6 +30,7 @@ func GetUsers(c *fiber.Ctx) error {
 
 	// iterate the cursor and decode each item into an Employee
 	if err := cursor.All(c.Context(), &users); err != nil {
+		fmt.Println("Decode failed")
 		return c.Status(500).SendString(err.Error())
 
 	}
