@@ -13,36 +13,39 @@ type MongoInstance struct {
 	Db     *mongo.Database
 }
 
-var Mg MongoInstance
+var Mg *mongo.Database
 
 func Connect() error {
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb+srv://new_user1:ueWjO2knNNZVAW2H@cluster0.patmm.mongodb.net/max-trade?retryWrites=true&w=majority"))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb+srv://new_user1:ueWjO2knNNZVAW2H@cluster0.patmm.mongodb.net/max-trade?retryWrites=true&w=majority"))
 
 	if err != nil {
 		fmt.Println("Error connecting 0")
 		return err
 	}
 
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			fmt.Println("disconnect")
-			panic(err)
-		}
-	}()
+	// Defer disconnect when function exits
+	// defer func() {
+	// 	if err := client.Disconnect(context.Background()); err != nil {
+	// 		fmt.Println("Error disconnecting:", err)
+	// 	}
+	// }()
 
-	db := client.Database("max-trade")
+	// Ping to test connection (optional)
+	if err := client.Ping(context.Background(), nil); err != nil {
+		return fmt.Errorf("ping failed: %w", err)
+	}
 
 	if err != nil {
 		fmt.Println("Error connecting")
 		return err
 	}
-
-	Mg = MongoInstance{
-		Client: client,
-		Db:     db,
-	}
+	Mg = client.Database("max-trade")
 	fmt.Println("Connected")
 
 	return nil
+}
+
+func GetConnect() *mongo.Database {
+	return Mg
 }

@@ -11,4 +11,5 @@ func UserRoutes(app *fiber.App) {
 	route := app.Group("/users")
 
 	route.Get("/", controllers.GetUsers)
+	route.Get("/:id", controllers.GetUser)
 }
