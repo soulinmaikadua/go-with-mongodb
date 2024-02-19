@@ -14,7 +14,7 @@ import (
 func Signup(c *fiber.Ctx) error {
 	user := &models.InputUser{}
 
-	// Check, if requested JSON is valid
+	// Parse body into struct
 	if err := c.BodyParser(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
@@ -26,7 +26,6 @@ func Signup(c *fiber.Ctx) error {
 	db := configs.GetConnect()
 
 	result, err := db.Collection("traders").InsertOne(context.Background(), user)
-	// Check, if requested JSON is valid
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
@@ -42,7 +41,7 @@ func Login(c *fiber.Ctx) error {
 	user := &models.InputUser{}
 	inputUser := &models.LoginInput{}
 
-	// Check, if requested JSON is valid
+	// Parse body into struct
 	if err := c.BodyParser(inputUser); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
@@ -54,7 +53,6 @@ func Login(c *fiber.Ctx) error {
 	db := configs.GetConnect()
 
 	err := db.Collection("traders").FindOne(context.Background(), bson.M{"email": inputUser.Email}).Decode(&user)
-	// Check, if requested JSON is valid
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
