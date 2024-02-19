@@ -11,15 +11,36 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type LoginInput struct {
-	Email    string `bson:"email"`
-	Password string `bson:"password"`
+func Signup(c *fiber.Ctx) error {
+	user := &models.InputUser{}
+
+	// Check, if requested JSON is valid
+	if err := c.BodyParser(user); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	// get connection
+	db := configs.GetConnect()
+
+	result, err := db.Collection("traders").InsertOne(context.Background(), user)
+	// Check, if requested JSON is valid
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+	fmt.Println(result.InsertedID)
+	return c.JSON(user)
 }
 
 func Login(c *fiber.Ctx) error {
 
 	user := &models.InputUser{}
-	inputUser := &LoginInput{}
+	inputUser := &models.LoginInput{}
 
 	// Check, if requested JSON is valid
 	if err := c.BodyParser(inputUser); err != nil {
@@ -51,7 +72,6 @@ func Login(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	fmt.Println("VerifyPassword", match)
 	user.Password = "FUCK_YOU"
 
 	token, err := utils.GenerateNewToken(*user)

@@ -52,3 +52,8 @@ type InputUser struct {
 	CreatedAt     time.Time          `json:"created_at" bson:"created_at,omitempty"`
 	UpdatedAt     time.Time          `json:"updated_at" bson:"updated_at,omitempty"`
 }
+
+type LoginInput struct {
+	Email    string `bson:"email"`
+	Password string `bson:"password"`
+}
