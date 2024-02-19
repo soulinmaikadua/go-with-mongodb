@@ -29,7 +29,10 @@ func GetUsers(c *fiber.Ctx) error {
 	totalCount, err := db.Collection("traders").CountDocuments(context.Background(), bson.D{})
 	if err != nil {
 		fmt.Println("Error getting")
-		return c.Status(500).SendString(err.Error())
+		return c.Status(500).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
 	}
 
 	// get users
@@ -37,7 +40,10 @@ func GetUsers(c *fiber.Ctx) error {
 	cursor, err := db.Collection("traders").Find(context.Background(), query, options.Find().SetSkip(int64(skip)).SetLimit(int64(limit)))
 	if err != nil {
 		fmt.Println("can't find users")
-		return c.Status(500).SendString(err.Error())
+		return c.Status(500).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
 	}
 	users := Users{
 		Page:     0,
@@ -48,7 +54,10 @@ func GetUsers(c *fiber.Ctx) error {
 	// iterate the cursor and decode each item into an Users
 	if err := cursor.All(context.Background(), &users.UserList); err != nil {
 		fmt.Println("Decode failed")
-		return c.Status(500).SendString(err.Error())
+		return c.Status(500).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
 	}
 	// Calculate the total number of users
 	users.Total = int(totalCount)
@@ -73,10 +82,16 @@ func GetUser(c *fiber.Ctx) error {
 		// Check if the error indicates "document not found"
 		if err == mongo.ErrNoDocuments {
 			// Return a 404 Not Found response
-			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": true, "message": "User not found"})
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error":   true,
+				"message": "User not found",
+			})
 		}
 		fmt.Println("can't find users")
-		return c.Status(500).SendString(err.Error())
+		return c.Status(500).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
 	}
 
 	return c.JSON(user)
