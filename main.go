@@ -26,6 +26,7 @@ func main() {
 	})
 
 	// routes
+	routes.AuthRoutes(app)
 	routes.UserRoutes(app)
 
 	port := 6000
