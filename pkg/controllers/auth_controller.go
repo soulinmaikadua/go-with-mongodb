@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/soulinmaikadua/go-with-mongodb/pkg/configs"
 	"github.com/soulinmaikadua/go-with-mongodb/pkg/models"
@@ -40,9 +41,17 @@ func Login(c *fiber.Ctx) error {
 
 	user := &models.InputUser{}
 	inputUser := &models.LoginInput{}
+	validate := validator.New()
 
 	// Parse body into struct
 	if err := c.BodyParser(inputUser); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+	// Validate struct
+	if err := validate.Struct(inputUser); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
