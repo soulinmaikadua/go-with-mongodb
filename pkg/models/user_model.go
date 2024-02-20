@@ -35,7 +35,7 @@ type InputUser struct {
 	LastName      string             `json:"last_name" bson:"last_name,omitempty"`
 	UserName      string             `json:"username" bson:"username,omitempty"`
 	Email         string             `json:"email" bson:"email,omitempty"`
-	Password      string             `json:"password" bson:"password,omitempty"`
+	Password      string             `json:"password" bson:"password" validate:"required,gte=8"`
 	Image         string             `json:"image" bson:"image"`
 	InvitedCode   string             `json:"invite_code" bson:"invite_code"`
 	ProviderCode  string             `json:"provider_code" bson:"provider_code"`
@@ -54,6 +54,6 @@ type InputUser struct {
 }
 
 type LoginInput struct {
-	Email    string `bson:"email"`
-	Password string `bson:"password"`
+	Email    string `bson:"email" validate:"required"`
+	Password string `bson:"password" validate:"required"`
 }
